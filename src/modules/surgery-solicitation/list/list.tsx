@@ -12,6 +12,7 @@ import { useModal } from "@src/lib/context/modal/modal-provider";
 import { CreateSolicitation } from "../create";
 import useSurgerySolicitationsRequests from "@src/lib/services/surgery-solicitation";
 import toast from "react-hot-toast";
+import { useStatus } from "@src/lib/context/status/status-provider";
 
 export const SurgeryListPage = () => {
     const hookPagination = usePagination();
@@ -21,6 +22,7 @@ export const SurgeryListPage = () => {
     const { findAll, loading, deleteSurgerySolicitation } =
         useSurgerySolicitationsRequests();
     const modalContext = useModal();
+    const statusContext = useStatus();
     const [solicitationList, setSolicitationList] = useState<
         SurgerySolicitationEntity[]
     >([]);
@@ -75,16 +77,31 @@ export const SurgeryListPage = () => {
 
         await getAllSolicitation();
     };
+
+    const handleChangeStatus = () => {
+        const currStatus = statusContext.status?.status;
+        statusContext.changeStatus(
+            currStatus === "Active" ? "Inactive" : "Active"
+        );
+    };
     return (
         <S.ListWrapper>
             <S.HeaderWrapper>
                 <S.TitlePage>Listagem de Solicitações</S.TitlePage>
-                <Button
-                    data-testid="showCreateModal"
-                    onClick={() => handleOpenCreateForm()}
-                >
-                    Criar Solicitação
-                </Button>
+                <div className="buttonContainer">
+                    <Button
+                        data-testid="changeStatus"
+                        onClick={() => handleChangeStatus()}
+                    >
+                        Mudar status
+                    </Button>
+                    <Button
+                        data-testid="showCreateModal"
+                        onClick={() => handleOpenCreateForm()}
+                    >
+                        Criar Solicitação
+                    </Button>
+                </div>
             </S.HeaderWrapper>
             {windowDimensions.width > 700 ? (
                 <Table

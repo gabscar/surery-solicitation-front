@@ -13,6 +13,7 @@ export const ContainerAccordionContent = styled.div`
     justify-content: flex-start;
     align-items: flex-start;
     flex-direction: column;
+    margin-bottom: 5px;
 `;
 
 export const CollapseWrapper = styled.div`

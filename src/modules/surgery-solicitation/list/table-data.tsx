@@ -1,10 +1,11 @@
 import { SurgerySolicitationEntity } from "@lib/interfaces/surgery-solicitation";
 import { formatDate } from "@src/utils/functions";
-import { Button, Space } from "antd";
+import { Button, Space, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useModal } from "@src/lib/context/modal/modal-provider";
 import { UpdateSolicitation } from "../update";
 import { ModalContextData } from "@src/lib/context/modal/modal-context";
+import { useStatus } from "@src/lib/context/status/status-provider";
 
 export const handleOpenUpdateSurgerySolicitationForm = (
     id: string,
@@ -25,7 +26,7 @@ export const getColumns = (
     params: IGetColumns
 ): ColumnsType<SurgerySolicitationEntity> => {
     const modalContext = useModal();
-
+    const statusContext = useStatus();
     return [
         {
             title: "Code",
@@ -52,6 +53,21 @@ export const getColumns = (
             dataIndex: "surgery_date",
             key: "surgery_date",
             render: (text) => <span>{formatDate(text)}</span>,
+        },
+        {
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            render: () => (
+                <div>
+                    <b>Status:</b>
+                    <span>
+                        <Tag color={statusContext.status?.color}>
+                            {statusContext.status?.status.toUpperCase()}
+                        </Tag>
+                    </span>
+                </div>
+            ),
         },
         {
             title: "Action",

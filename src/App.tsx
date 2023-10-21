@@ -6,6 +6,7 @@ import ErrorPage from "./pages/error-page";
 import SurgeryPage from "./pages/surgery-solicitation/list";
 import { ModalProvider } from "./lib/context/modal/modal-provider";
 import { Toaster } from "react-hot-toast";
+import { StatusProvider } from "./lib/context/status/status-provider";
 
 const router = createBrowserRouter([
     {
@@ -24,7 +25,9 @@ function App() {
         <React.StrictMode>
             <Toaster />
             <ModalProvider>
-                <RouterProvider router={router} />
+                <StatusProvider>
+                    <RouterProvider router={router} />
+                </StatusProvider>
             </ModalProvider>
         </React.StrictMode>
     );
