@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import { surgerySolicitation } from "./schema/surgerySolicitationForm";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Col, Row } from "antd";
-import { ICreateSurgerySolicitationParams } from "@lib/services/surgery-solicitation/interfaces";
+import { Button, Col, Row, Spin } from "antd";
+import { ICreateSurgerySolicitationParams } from "@src/lib/services/surgery-solicitation/interfaces";
 import { getSurgerySolicitationsDefaultValue } from "./defaultValues/surgery-solicitation";
 import * as S from "./styles";
 import { TextFieldInput } from "@src/components/inputs/text-field";
@@ -12,6 +12,7 @@ export interface ISurgerySolicitationForm {
     data?: ICreateSurgerySolicitationParams;
     onSubmit: (value: ICreateSurgerySolicitationParams) => Promise<void>;
     submitFormText: string;
+    loading: boolean;
 }
 export const SurgerySolicitationForm = (params: ISurgerySolicitationForm) => {
     const {
@@ -29,7 +30,7 @@ export const SurgerySolicitationForm = (params: ISurgerySolicitationForm) => {
     };
 
     return (
-        <S.FormWrapper>
+        <S.FormWrapper data-testid="solicitation-form">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <S.FormInputsWrapper>
                     <Row gutter={30}>
@@ -112,8 +113,12 @@ export const SurgerySolicitationForm = (params: ISurgerySolicitationForm) => {
                     </Row>
                 </S.FormInputsWrapper>
                 <S.ButtonsWrapper>
-                    <Button type="primary" htmlType="submit">
-                        {params.submitFormText}
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        disabled={params.loading}
+                    >
+                        {params.loading ? <Spin /> : params.submitFormText}
                     </Button>
                 </S.ButtonsWrapper>
             </form>

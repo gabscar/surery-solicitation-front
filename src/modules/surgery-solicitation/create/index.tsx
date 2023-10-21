@@ -1,11 +1,13 @@
 import { ICreateSurgerySolicitationParams } from "@src/lib/services/surgery-solicitation/interfaces";
 import { SurgerySolicitationForm } from "../components/form";
-import { useSurgerySolicitationsRequests } from "@src/lib/services/surgery-solicitation";
+import useSurgerySolicitationsRequests from "@src/lib/services/surgery-solicitation";
 import { useModal } from "@src/lib/context/modal/modal-provider";
+import toast from "react-hot-toast/headless";
 
 export const CreateSolicitation = () => {
     const modalContext = useModal();
-    const { createSurgerySolicitation } = useSurgerySolicitationsRequests();
+    const { createSurgerySolicitation, loading } =
+        useSurgerySolicitationsRequests();
     const createSolicitation = async (
         value: ICreateSurgerySolicitationParams
     ) => {
@@ -13,6 +15,10 @@ export const CreateSolicitation = () => {
             requestParams: { ...value },
             successCallback: () => {
                 modalContext.changeOpenStatus(false);
+                toast.success("Solicitação criada com sucesso");
+            },
+            errorCallback: () => {
+                toast.error("Erro ao criar solicitação");
             },
         });
     };
@@ -21,6 +27,7 @@ export const CreateSolicitation = () => {
             onSubmit={createSolicitation}
             submitFormText="Criar"
             data={undefined}
+            loading={loading.create}
         />
     );
 };

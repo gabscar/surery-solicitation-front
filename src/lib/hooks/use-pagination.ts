@@ -13,7 +13,7 @@ export function usePagination() {
     const [pagination, setPagination] = useState<PaginationType>({
         totalPages: 1,
         currentPage: 1,
-        take: 10,
+        take: 5,
 
         totalItems: 10,
     });

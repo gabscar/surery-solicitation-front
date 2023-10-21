@@ -16,7 +16,14 @@ export const handleOpenUpdateSurgerySolicitationForm = (
     });
     modalContext.changeOpenStatus(true);
 };
-export const getColumns = (): ColumnsType<SurgerySolicitationEntity> => {
+
+interface IGetColumns {
+    onDeleteData: (id: string) => Promise<void>;
+    loadDelete: boolean;
+}
+export const getColumns = (
+    params: IGetColumns
+): ColumnsType<SurgerySolicitationEntity> => {
     const modalContext = useModal();
 
     return [
@@ -61,7 +68,12 @@ export const getColumns = (): ColumnsType<SurgerySolicitationEntity> => {
                     >
                         Editar
                     </Button>
-                    <Button>Deletar</Button>
+                    <Button
+                        onClick={() => params.onDeleteData(record.id)}
+                        block={params.loadDelete}
+                    >
+                        Deletar
+                    </Button>
                 </Space>
             ),
         },

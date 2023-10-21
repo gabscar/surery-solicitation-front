@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
 import { ModalContextData, IStateManager } from "./modal-context";
-import FormDrawer from "@src/components/modal";
+import FormModal from "@src/components/modal";
 
 type ControlModalProviderProps = {
     children: React.ReactNode;
@@ -37,13 +37,13 @@ export const ModalProvider = ({ children }: ControlModalProviderProps) => {
             }}
         >
             {modalState && (
-                <FormDrawer
+                <FormModal
                     isVisible={open}
                     onToggle={handleClose}
                     title={modalState?.modalTitle}
                 >
                     {modalState?.form}
-                </FormDrawer>
+                </FormModal>
             )}
             {children}
         </ModalContext.Provider>

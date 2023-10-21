@@ -8,7 +8,7 @@ export interface IFormDrawer {
     children: ReactNode;
 }
 
-const FormDrawer = ({ title, onToggle, isVisible, children }: IFormDrawer) => {
+const FormModal = ({ title, onToggle, isVisible, children }: IFormDrawer) => {
     return (
         <>
             <Modal
@@ -24,4 +24,4 @@ const FormDrawer = ({ title, onToggle, isVisible, children }: IFormDrawer) => {
     );
 };
 
-export default FormDrawer;
+export default FormModal;

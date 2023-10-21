@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Table } from "antd";
-import type { TablePaginationConfig } from "antd/es/table";
+import { TablePaginationConfig } from "antd/es/table";
 import { usePagination } from "../../../lib/hooks/use-pagination";
 
 import { getColumns } from "./table-data";
@@ -10,35 +10,39 @@ import * as S from "./styles";
 import { CollapseComponent } from "../components/collapse-list";
 import { useModal } from "@src/lib/context/modal/modal-provider";
 import { CreateSolicitation } from "../create";
-import { useSurgerySolicitationsRequests } from "@src/lib/services/surgery-solicitation";
+import useSurgerySolicitationsRequests from "@src/lib/services/surgery-solicitation";
+import toast from "react-hot-toast";
 
-export const SurgeryListPage: React.FC = () => {
+export const SurgeryListPage = () => {
     const hookPagination = usePagination();
     const [windowDimensions, setWindowDimensions] = useState(
         getWindowDimensions()
     );
-    const { findAll } = useSurgerySolicitationsRequests();
+    const { findAll, loading, deleteSurgerySolicitation } =
+        useSurgerySolicitationsRequests();
     const modalContext = useModal();
-
     const [solicitationList, setSolicitationList] = useState<
         SurgerySolicitationEntity[]
     >([]);
+    const getAllSolicitation = async () => {
+        await findAll({
+            requestParams: {
+                code: "",
+                page: hookPagination.pagination.currentPage,
+                take: hookPagination.pagination.take,
+            },
+            successCallback: (value) => {
+                if (value) {
+                    setSolicitationList(value?.data);
+                    hookPagination.setTotalPage(value?.meta.max);
+                }
+            },
+            errorCallback: () => {
+                toast.error("Erro ao buscar solicitações");
+            },
+        });
+    };
     useEffect(() => {
-        const getAllSolicitation = async () => {
-            await findAll({
-                requestParams: {
-                    code: "",
-                    page: hookPagination.pagination.currentPage,
-                    take: hookPagination.pagination.take,
-                },
-                successCallback: (value) => {
-                    if (value) {
-                        setSolicitationList(value?.data);
-                        hookPagination.setTotalPage(value?.meta.max);
-                    }
-                },
-            });
-        };
         getAllSolicitation();
     }, [modalContext.isOpen, hookPagination.pagination.currentPage]);
 
@@ -65,23 +69,36 @@ export const SurgeryListPage: React.FC = () => {
         });
         modalContext.changeOpenStatus(true);
     };
+
+    const onDeleteData = async (id: string) => {
+        await deleteSurgerySolicitation({ requestParams: { id } });
+
+        await getAllSolicitation();
+    };
     return (
         <S.ListWrapper>
             <S.HeaderWrapper>
                 <S.TitlePage>Listagem de Solicitações</S.TitlePage>
-                <Button onClick={() => handleOpenCreateForm()}>
+                <Button
+                    data-testid="showCreateModal"
+                    onClick={() => handleOpenCreateForm()}
+                >
                     Criar Solicitação
                 </Button>
             </S.HeaderWrapper>
-
             {windowDimensions.width > 700 ? (
                 <Table
-                    columns={getColumns()}
+                    columns={getColumns({
+                        onDeleteData,
+                        loadDelete: loading.delete,
+                    })}
                     dataSource={solicitationList}
                     onChange={handleChange}
+                    loading={loading.get}
                     pagination={{
                         current: hookPagination.pagination.currentPage,
                         total: hookPagination.pagination.totalItems,
+                        pageSize: hookPagination.pagination.take,
                     }}
                 />
             ) : (
@@ -89,6 +106,9 @@ export const SurgeryListPage: React.FC = () => {
                     handleMobileChange={handleMobileChange}
                     data={solicitationList}
                     hookPagination={hookPagination}
+                    loading={loading.get}
+                    onDeleteData={onDeleteData}
+                    loadDelete={loading.delete}
                 />
             )}
         </S.ListWrapper>
